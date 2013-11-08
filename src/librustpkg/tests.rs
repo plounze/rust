@@ -612,7 +612,6 @@ fn test_install_valid() {
 }
 
 #[test]
-#[ignore]
 fn test_install_invalid() {
     let sysroot = test_sysroot();
     let pkgid = fake_pkg();
@@ -628,8 +627,11 @@ fn test_install_invalid() {
                                   pkgid.clone());
         ctxt.install(pkg_src, &WhatToBuild::new(MaybeCustom, Everything));
     };
-    assert!(result.unwrap_err()
-            .to_str().contains("supplied path for package dir does not exist"));
+    let x = result.unwrap_err();
+    assert!(x.is::<~str>());
+    let error_string = *x.move::<~str>().unwrap();
+    debug!("result error = {}", error_string);
+    assert!(error_string.contains("supplied path for package dir does not exist"));
 }
 
 #[test]
@@ -660,7 +662,6 @@ fn test_install_valid_external() {
 }
 
 #[test]
-#[ignore(reason = "9994")]
 fn test_install_invalid_external() {
     let cwd = os::getcwd();
     command_line_test_expect_fail([~"install", ~"foo"],
